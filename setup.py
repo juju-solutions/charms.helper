@@ -2,13 +2,13 @@ from setuptools import setup
 
 
 SETUP = {
-    'name': "charms.tool",
+    'name': "charms.model",
     'version': '0.0.1',
     'author': "Ubuntu Developers",
     'author_email': "juju@lists.ubuntu.com",
-    'url': 'https://github.com/juju-solutions/charms.tool',
+    'url': 'https://github.com/juju-solutions/charms.model',
     'packages': [
-        'charms.tool',
+        'charms.model',
     ],
     'install_requires': [
         'pyaml',
