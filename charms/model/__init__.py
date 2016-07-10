@@ -36,27 +36,6 @@ INFO = "INFO"
 DEBUG = "DEBUG"
 
 
-def log(message, level=None):
-    """Write a message to the juju log"""
-    command = ['juju-log']
-    if level:
-        command += ['-l', level]
-    if not isinstance(message, str):
-        message = repr(message)
-    command += [message]
-    # Missing juju-log should not cause failures in unit tests
-    # Send log output to stderr
-    try:
-        subprocess.call(command)
-    except OSError as e:
-        if e.errno == errno.ENOENT:
-            if level:
-                message = "{}: {}".format(level, message)
-            message = "juju-log: {}".format(message)
-            print(message, file=sys.stderr)
-        else:
-            raise
-
 
 def execution_environment():
     """A convenient bundling of the current execution context"""
@@ -98,19 +77,9 @@ def relation_id(relation_name=None, service_or_unit=None):
                          'service_or_unit')
 
 
-def local_unit():
-    """Local unit ID"""
-    return os.environ['JUJU_UNIT_NAME']
-
-
 def remote_unit():
     """The remote unit for the current relation hook"""
     return os.environ.get('JUJU_REMOTE_UNIT', None)
-
-
-def service_name():
-    """The name service group this unit belongs to"""
-    return local_unit().split('/')[0]
 
 
 @cached
@@ -124,26 +93,7 @@ def remote_service_name(relid=None):
     return unit.split('/')[0] if unit else None
 
 
-def hook_name():
-    """The name of the currently executing hook"""
-    return os.environ.get('JUJU_HOOK_NAME', os.path.basename(sys.argv[0]))
 
-
-@cached
-def config(scope=None):
-    """Juju charm configuration"""
-    config_cmd_line = ['config-get']
-    if scope is not None:
-        config_cmd_line.append(scope)
-    config_cmd_line.append('--format=json')
-    try:
-        config_data = json.loads(
-            subprocess.check_output(config_cmd_line).decode('UTF-8'))
-        if scope is not None:
-            return config_data
-        return Config(config_data)
-    except ValueError:
-        return None
 
 
 @cached
